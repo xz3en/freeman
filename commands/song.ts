@@ -49,7 +49,6 @@ if (!(await exists("./music.json"))) {
     const rawdata = JSON.parse(await readFile("./music.json","utf-8"))
 
     for (const [key,value] of Object.entries(rawdata)) {
-        console.log(`${key}: ${value}`)
         music_urls.set(key,String(value))
     }
 }
@@ -82,7 +81,19 @@ export default class SongCommand extends BaseCommand {
         super(client)
     }
 
+    async playSong(ctx: Eris.CommandInteraction) {
+
+    }
+
+    async stopSong(ctx: Eris.CommandInteraction) {
+
+    }
+
     async execute(ctx: Eris.CommandInteraction) {
-        await ctx.createMessage("Pong!")
+        if (!ctx.data.options) return
+        const name = ctx.data.options[0].name
+        console.log(name)
+
+        ctx.createMessage(name)
     }
 }
