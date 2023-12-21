@@ -48,9 +48,9 @@ if (!(await exists("./music.json"))) {
 } else {
     const rawdata = JSON.parse(await readFile("./music.json","utf-8"))
 
-    for (const [key,value] of rawdata) {
+    for (const [key,value] of Object.entries(rawdata)) {
         console.log(`${key}: ${value}`)
-        music_urls.set(key,value)
+        music_urls.set(key,String(value))
     }
 }
 
