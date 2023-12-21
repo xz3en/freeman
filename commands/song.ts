@@ -82,18 +82,21 @@ export default class SongCommand extends BaseCommand {
     }
 
     async playSong(ctx: Eris.CommandInteraction) {
-
+        ctx.createMessage("yeesh, play command")
     }
 
     async stopSong(ctx: Eris.CommandInteraction) {
-
+        ctx.createMessage("wovie, stop command")
     }
 
     async execute(ctx: Eris.CommandInteraction) {
         if (!ctx.data.options) return
         const name = ctx.data.options[0].name
-        console.log(name)
-
-        ctx.createMessage(name)
+        switch (name) {
+            case "play":
+                this.playSong(ctx)
+            case "stop":
+                this.stopSong(ctx)
+        }
     }
 }
