@@ -12,7 +12,7 @@ const octokit = new Octokit({
 
 const music_urls = new Map<string,string>()
 
-if (!(await exists("../music.json"))) {
+if (!(await exists("./music.json"))) {
     console.log("No cache found, fetching stuff")
     const response = await octokit.request("GET /repos/{owner}/{repo}/contents",{
         owner: "xz3en",
@@ -26,6 +26,7 @@ if (!(await exists("../music.json"))) {
         jsmediatags.read(fileurl,{
             onSuccess: function(tag) {
                 if (!tag.tags.title) return
+                console.log(tag.tags.title)
                 music_urls.set(tag.tags.title,fileurl)
             },
             onError: function(err) {
@@ -34,7 +35,7 @@ if (!(await exists("../music.json"))) {
         })
     }
 
-    Bun.write("../music.json",JSON.stringify(Object.fromEntries(music_urls)))
+    Bun.write("./music.json",JSON.stringify(Object.fromEntries(music_urls)))
 
     console.log("Cached every song")
 }
