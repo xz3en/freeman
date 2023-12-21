@@ -11,7 +11,9 @@ const response = await octokit.request("GET /repos/{owner}/{repo}/contents",{
     repo: "hlmusic"
 })
 
-console.log(response.data)
+for (const rawfile of response.data) {
+    console.log(rawfile["name"])
+}
 
 export default class SongCommand extends BaseCommand {
     public name: string = "song"
