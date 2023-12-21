@@ -5,12 +5,26 @@ import jsmediatags from "jsmediatags"
 import { exists } from "node:fs/promises"
 
 import BaseCommand from "../basecommand"
+import { TagType } from "jsmediatags/types"
 
 const octokit = new Octokit({
     auth: Bun.env["GITHUB_TOKEN"]
 })
 
 const music_urls = new Map<string,string>()
+
+function readMediaTags(path: string): Promise<TagType["tags"]> {
+    return new Promise((resolve, reject) => {
+        jsmediatags.read(path,{
+            onSuccess: function(tag) {
+                resolve(tag.tags)
+            },
+            onError: function(err) {
+                reject(err)
+            }
+        })
+    })
+}
 
 if (!(await exists("./music.json"))) {
     console.log("No cache found, fetching stuff")
@@ -23,16 +37,9 @@ if (!(await exists("./music.json"))) {
         const filename: string = rawfile["name"]
         const fileurl: string = "https://github.com/xz3en/hlmusic/raw/main/" + encodeURIComponent(filename)
         
-        jsmediatags.read(fileurl,{
-            onSuccess: function(tag) {
-                if (!tag.tags.title) return
-                console.log(tag.tags.title)
-                music_urls.set(tag.tags.title,fileurl)
-            },
-            onError: function(err) {
-                console.error(err)
-            }
-        })
+        const tags = await readMediaTags(fileurl)
+
+        music_urls.set(tags.title || filename,fileurl)
     }
 
     Bun.write("./music.json",JSON.stringify(Object.fromEntries(music_urls)))
