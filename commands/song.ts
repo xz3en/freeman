@@ -1,5 +1,17 @@
 import * as Eris from "eris"
+import { Octokit } from "octokit"
 import BaseCommand from "../basecommand"
+
+const octokit = new Octokit({
+    auth: Bun.env["GITHUB_TOKEN"]
+})
+
+const response = await octokit.request("GET /repos/{owner}/{repo}/contents",{
+    owner: "xz3en",
+    repo: "hlmusic"
+})
+
+console.log(response.data)
 
 export default class SongCommand extends BaseCommand {
     public name: string = "song"

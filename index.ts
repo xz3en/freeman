@@ -28,6 +28,7 @@ async function updateCommands() {
             options: command.options,
             type: Eris.Constants.ApplicationCommandTypes.CHAT_INPUT
         })
+        console.log(`Parsed ${command.name} command`)
     }
 
     client.bulkEditCommands(rawCommands)
@@ -40,8 +41,8 @@ const client = new Eris.Client(
     }
 )
 
-client.on("ready",() => {
-    updateCommands()
+client.on("ready",async () => {
+    await updateCommands()
     console.log("Ready!")
 })
 
