@@ -2,7 +2,6 @@ import "dotenv/config"
 
 // Libraries
 import * as Eris from "eris"
-import express from "express"
 
 // Node built-ins
 import * as fs from "node:fs/promises"
@@ -40,7 +39,6 @@ const client = new Eris.Client(
         intents: Eris.Constants.Intents.all
     }
 )
-const app = express()
 
 client.on("ready",() => {
     updateCommands()
@@ -59,12 +57,12 @@ client.on("interactionCreate",(ctx) => {
     }
 })
 
-app.get("/",(_,res) => {
-    res.send("Works")
-})
-
-app.listen(PORT, () => {
-    console.log(`HTTP server listening on port ${PORT}`)
+Bun.serve({
+    port: PORT,
+    hostname: "0.0.0.0",
+    fetch(request) {
+        return new Response("Works")
+    }
 })
 
 client.connect()
