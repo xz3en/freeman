@@ -82,7 +82,19 @@ export default class SongCommand extends BaseCommand {
     }
 
     async playSong(ctx: Eris.CommandInteraction) {
-        ctx.createMessage("yeesh, play command")
+        if (!ctx.data.options || !ctx.member?.voiceState.channelID) return
+
+        await ctx.acknowledge()
+        
+        const option: any = ctx.data.options[0]
+        const query = option["options"][0]["value"]
+
+        console.log(query)
+
+
+        /* const voiceConnection = await this.client.joinVoiceChannel(ctx.member.voiceState.channelID,{
+            selfDeaf: true
+        }) */
     }
 
     async stopSong(ctx: Eris.CommandInteraction) {
@@ -90,13 +102,12 @@ export default class SongCommand extends BaseCommand {
     }
 
     async execute(ctx: Eris.CommandInteraction) {
-        if (!ctx.data.options) return
+        if (!ctx.data.options || !ctx.member) return
         const name = ctx.data.options[0].name
-        switch (name) {
-            case "play":
-                this.playSong(ctx)
-            case "stop":
-                this.stopSong(ctx)
+        if (name == "play") {
+            this.playSong(ctx)
+        } else if (name == "stop") {
+            this.stopSong(ctx)
         }
     }
 }
