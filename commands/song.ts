@@ -2,7 +2,7 @@ import * as Eris from "eris"
 import { Octokit } from "octokit"
 import jsmediatags from "jsmediatags"
 
-import { exists } from "node:fs/promises"
+import { exists, readFile } from "node:fs/promises"
 
 import BaseCommand from "../basecommand"
 import { TagType } from "jsmediatags/types"
@@ -45,6 +45,13 @@ if (!(await exists("./music.json"))) {
     Bun.write("./music.json",JSON.stringify(Object.fromEntries(music_urls)))
 
     console.log("Cached every song")
+} else {
+    const rawdata = JSON.parse(await readFile("./music.json","utf-8"))
+
+    for (const [key,value] of rawdata) {
+        console.log(`${key}: ${value}`)
+        music_urls.set(key,value)
+    }
 }
 
 export default class SongCommand extends BaseCommand {
