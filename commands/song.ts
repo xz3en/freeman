@@ -1,6 +1,6 @@
 import * as Eris from "eris"
 import { Octokit } from "octokit"
-import { fromUrl } from "id3js"
+import jsmediatags from "jsmediatags"
 
 import { exists } from "node:fs/promises"
 
@@ -23,12 +23,15 @@ if (!(await exists("../music.json"))) {
         const filename: string = rawfile["name"]
         const fileurl: string = "https://github.com/xz3en/hlmusic/raw/main/" + encodeURIComponent(filename)
         
-        const metadata = await fromUrl(fileurl)
-        if (!metadata) {
-            console.log(`Couldn't load ${filename}`)
-            continue
-        }
-        music_urls.set(metadata.title || filename,fileurl)
+        jsmediatags.read(fileurl,{
+            onSuccess: function(tag) {
+                if (!tag.tags.title) return
+                music_urls.set(tag.tags.title,fileurl)
+            },
+            onError: function(err) {
+                console.error(err)
+            }
+        })
     }
 
     Bun.write("../music.json",JSON.stringify(Object.fromEntries(music_urls)))
