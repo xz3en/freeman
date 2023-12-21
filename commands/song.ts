@@ -87,22 +87,54 @@ export default class SongCommand extends BaseCommand {
         await ctx.acknowledge()
         
         const option: any = ctx.data.options[0]
-        const query = option["options"][0]["value"]
+        const query: string = option["options"][0]["value"]
+        let songName = null
 
-        console.log(query)
+        for (const song of music_urls.keys()) {
+            if (song.toLowerCase().includes(query.toLowerCase())) {
+                songName = song
+                break
+            }
+        }
 
+        if (songName === null) {
+            return ctx.createMessage({
+                content: "No song found",
+                flags: 64
+            })
+        }
 
-        /* const voiceConnection = await this.client.joinVoiceChannel(ctx.member.voiceState.channelID,{
+        const voiceConnection = await this.client.joinVoiceChannel(ctx.member.voiceState.channelID,{
             selfDeaf: true
-        }) */
+        })
+
+
+        const url = music_urls.get(songName)
+
+        if (!url) return
+
+        await voiceConnection.play(url)
+
+        ctx.createMessage(`Playing ${songName}`)
     }
 
     async stopSong(ctx: Eris.CommandInteraction) {
-        ctx.createMessage("wovie, stop command")
+        const voiceConnection = this.client.voiceConnections.get(ctx.guildID || "")
+
+        if (!voiceConnection) {
+            return ctx.createMessage({
+                content: "Not playing anything",
+                flags: 64
+            })
+        }
+
+        voiceConnection.disconnect()
+
+        return ctx.createMessage("Stopped playback")
     }
 
     async execute(ctx: Eris.CommandInteraction) {
-        if (!ctx.data.options || !ctx.member) return
+        if (!ctx.data.options || !ctx.member || !ctx.guildID) return
         const name = ctx.data.options[0].name
         if (name == "play") {
             this.playSong(ctx)
