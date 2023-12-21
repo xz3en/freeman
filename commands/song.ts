@@ -1,18 +1,31 @@
 import * as Eris from "eris"
 import { Octokit } from "octokit"
+import { fromUrl } from "id3js"
+
+import { exists } from "node:fs/promises"
+
 import BaseCommand from "../basecommand"
 
 const octokit = new Octokit({
     auth: Bun.env["GITHUB_TOKEN"]
 })
 
-const response = await octokit.request("GET /repos/{owner}/{repo}/contents",{
-    owner: "xz3en",
-    repo: "hlmusic"
-})
+const music_urls = new Map<string,string>()
 
-for (const rawfile of response.data) {
-    console.log(rawfile["name"])
+if (!(await exists("../music.json"))) {
+    const response = await octokit.request("GET /repos/{owner}/{repo}/contents",{
+        owner: "xz3en",
+        repo: "hlmusic"
+    })
+    
+    for (const rawfile of response.data) {
+        const filename: string = rawfile["name"]
+        const fileurl: string = "https://github.com/xz3en/hlmusic/raw/main/" + encodeURIComponent(filename)
+    
+        const metadata = await fromUrl(fileurl)
+        if (!metadata) continue
+        console.log(metadata.title)
+    }
 }
 
 export default class SongCommand extends BaseCommand {
