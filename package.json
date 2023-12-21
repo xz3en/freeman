@@ -1,0 +1,20 @@
+{
+  "name": "freeman",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "bun install && bun --smol run index.ts"
+  },
+  "devDependencies": {
+    "bun-types": "latest",
+    "@types/express": "^4.17.21"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "eris": "^0.17.2",
+    "express": "^4.18.2"
+  }
+}
